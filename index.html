@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Anushka 💘</title>
+
+<style>
+:root{
+  --accent:#ff2d55;
+  --accent2:#ff6b8a;
+  --bg:#fff7fb;
+  --border:#ffd1dd;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  background:
+    radial-gradient(circle at 20% 10%, #ffe6ee, transparent 55%),
+    radial-gradient(circle at 80% 0%, #ffe7c7, transparent 55%),
+    linear-gradient(180deg,#fff,var(--bg));
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.wrap{max-width:900px;margin:auto;padding:28px 16px 80px;}
+.card{
+  background:white;border:1px solid var(--border);border-radius:22px;
+  padding:24px;box-shadow:0 18px 40px rgba(255,45,85,.15);
+}
+h1{font-size:36px;margin:0 0 10px;line-height:1.1}
+p{font-size:16px;color:#1f2937;line-height:1.6;margin:10px 0;}
+.muted{color:var(--muted)}
+.row{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:start;}
+@media(max-width:820px){.row{grid-template-columns:1fr}}
+
+.photoBox{
+  aspect-ratio:4/3;border:1px solid var(--border);border-radius:16px;
+  background:#fff7fb;display:grid;place-items:center;position:relative;
+  overflow:hidden;text-align:center;font-weight:700;color:var(--muted);
+}
+.photoBox img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;
+}
+.fallback{
+  padding:14px;
+  text-align:center;
+  display:none;
+  color:var(--muted);
+  font-weight:800;
+}
+
+.btns{
+  display:flex;
+  flex-direction:column; /* ✅ stack YES then NO playground */
+  gap:14px;
+  margin-top:18px;
+  align-items:flex-start;
+}
+
+button{
+  padding:14px 18px;border-radius:16px;border:0;font-size:16px;
+  font-weight:800;cursor:pointer;user-select:none;
+}
+.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:white;box-shadow:0 12px 22px rgba(255,45,85,.3);
+}
+.secondary{background:white;border:1px solid var(--border);}
+
+/* ✅ BIGGER movement zone */
+.noArea{
+  position:relative;
+  width:min(520px, 100%);
+  height:220px;
+  margin-top:2px;
+  border-radius:18px;
+  background:rgba(255,255,255,.55);
+  border:1px dashed #ffd1dd;
+  padding:10px;
+  overflow:hidden;
+}
+
+#noBtn{
+  position:absolute;
+  left:10px;
+  top:10px;
+  transition:left 140ms ease, top 140ms ease;
+}
+
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.35);
+  display:none;place-items:center;padding:18px;
+}
+.modal.open{display:grid}
+.modalCard{
+  background:white;padding:20px;border-radius:22px;text-align:center;
+  max-width:700px;width:100%;box-shadow:0 18px 45px rgba(0,0,0,.18);
+}
+.gifGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;}
+@media(max-width:700px){.gifGrid{grid-template-columns:1fr}}
+.gifGrid img{width:100%;border-radius:14px;border:1px solid #ffe2ea;background:#fff7fb}
+
+.watermark{
+  position:fixed;right:14px;bottom:10px;font-size:12px;
+  color:#9ca3af;opacity:.6;pointer-events:none;z-index:9999;
+}
+
+.heart{
+  position:fixed;width:14px;height:14px;background:var(--accent);
+  transform:rotate(45deg);animation:floatUp 8s linear infinite;
+  opacity:.2;pointer-events:none;
+}
+.heart::before,.heart::after{
+  content:"";position:absolute;width:14px;height:14px;background:inherit;border-radius:50%;
+}
+.heart::before{left:-7px}
+.heart::after{top:-7px}
+@keyframes floatUp{to{transform:translateY(-120vh) rotate(45deg);opacity:0}}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Hey Anushka… 💘</h1>
+    <p>I made this page just for you. Because you deserve effort — and a little chaos 😌</p>
+
+    <div class="row">
+      <div>
+        <h1 style="font-size:38px;margin:8px 0 6px">Will you be my Valentine? 🌹</h1>
+
+        <div class="btns">
+          <button class="primary" id="yesBtn">YES 😳💞</button>
+
+          <!-- ✅ bigger free space for NO -->
+          <div class="noArea" id="noArea">
+            <button class="secondary" id="noBtn">No 🙃</button>
+          </div>
+        </div>
+
+        <p class="muted">No pressure. But the “No” button is feeling shy.</p>
+      </div>
+
+      <div>
+        <div class="photoBox">
+          <!-- IMPORTANT:
+               Upload the image in the SAME folder as index.html in GitHub.
+               Name must match exactly: anushka.jpg (case-sensitive)
+          -->
+          <img id="anushkaImg" src="./anushka.jpg" alt="Anushka">
+          <div id="imgFallback" class="fallback">
+            Photo not found 😭<br>
+            Upload <b>anushka.jpg</b> next to <b>index.html</b><br>
+            (exact spelling + same extension)
+          </div>
+        </div>
+        <p class="muted" style="text-align:center;margin-top:10px">
+          Cute evidence file attached 📸😌
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- YES MODAL -->
+<div class="modal" id="modal">
+  <div class="modalCard">
+    <h1 style="margin:0 0 6px">YAYYYYY 🥰</h1>
+    <p class="muted" style="margin:0 0 10px">Okay… this just became my favourite moment.</p>
+
+    <div class="gifGrid">
+      <img alt="gif1" src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
+      <img alt="gif2" src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif">
+      <img alt="gif3" src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif">
+    </div>
+
+    <div style="margin-top:14px">
+      <button class="primary" id="closeBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="watermark">Parixit</div>
+
+<script>
+/* Elements */
+const yesBtn   = document.getElementById("yesBtn");
+const noBtn    = document.getElementById("noBtn");
+const noArea   = document.getElementById("noArea");
+const modal    = document.getElementById("modal");
+const closeBtn = document.getElementById("closeBtn");
+
+const img = document.getElementById("anushkaImg");
+const fb  = document.getElementById("imgFallback");
+
+/* Photo fallback if path/name is wrong */
+img.addEventListener("error", () => {
+  img.style.display = "none";
+  fb.style.display = "block";
+});
+
+/* floating hearts */
+setInterval(() => {
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.style.left = (Math.random() * 100) + "vw";
+  h.style.top = "110vh";
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), 8000);
+}, 900);
+
+/* NO button texts */
+const noTexts = [
+  "No 🙃","Are you sure? 🥺","Just checking… really sure? 😌","Hmm. That felt accidental 😅",
+  "Okay but my heart disagrees 💘","This button seems confused 😂","I respect your choice… but 👀",
+  "That click had hesitation energy","Take your time, I’ll wait 🙂","Still cute either way 💗",
+  "You know YES is smiling at you","No pressure. Mild persuasion only 😇","Even the universe blinked just now ✨",
+  "That was bold. Unexpected. Iconic.","I admire the confidence 😌","This is becoming a conversation",
+  "Okay but imagine the GIFs 👀","Your finger slipped, didn’t it?","I’ll pretend I didn’t see that",
+  "Interesting choice… fascinating","Still rooting for us though 💞","Plot twist unlocked",
+  "Rom-coms usually say YES here","Suspense is building 😳","The YES button feels ignored",
+  "No is mysterious, I’ll give you that","Your honesty is appreciated 💐","This tension deserves background music",
+  "Okay, villain arc activated (jk)","I’ll ask again, politely 😌","That was very main-character of you",
+  "No worries, still smiling here 🙂","Your move, protagonist","This is not a rejection, it’s a pause",
+  "The YES button just sighed","Bold strategy, let’s see how it plays out","You’re enjoying this, aren’t you? 😏",
+  "This feels like a slow-burn romcom","Romance loading… please wait","I’m still here, by the way 💗",
+  "Okay okay, I see you","No today… maybe yes in 2 seconds?","The suspense is cute though",
+  "Dramatic pause noted","Respectfully… reconsider?","No is temporary. GIFs are forever",
+  "You’re making this interesting","Still hoping quietly 💘"
+];
+let ni = 0;
+
+/* NO button movement (bigger space + guaranteed jump) */
+let lastX = -999, lastY = -999;
+function nextNoPos(){
+  const a = noArea.getBoundingClientRect();
+  const b = noBtn.getBoundingClientRect();
+
+  const maxX = Math.max(0, a.width - b.width);
+  const maxY = Math.max(0, a.height - b.height);
+
+  const MIN_DIST = 70; // ✅ bigger jump so it feels alive
+  let x = 0, y = 0;
+
+  for(let tries=0; tries<30; tries++){
+    x = Math.floor(Math.random() * (maxX + 1));
+    y = Math.floor(Math.random() * (maxY + 1));
+    const dist = Math.hypot(x - lastX, y - lastY);
+    if(dist >= MIN_DIST) break;
+  }
+
+  lastX = x; lastY = y;
+  return {x,y};
+}
+
+noBtn.addEventListener("click", () => {
+  noBtn.textContent = noTexts[ni++ % noTexts.length];
+  const {x,y} = nextNoPos();
+  noBtn.style.left = x + "px";
+  noBtn.style.top  = y + "px";
+});
+
+/* YES → Google Form + open modal */
+yesBtn.addEventListener("click", () => {
+  fetch(
+    "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfEX7HTR8PxVn4GiyvZ0KGpvaRI_ibhqMVXXPkc3q2PtGSu-A/formResponse",
+    {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type":"application/x-www-form-urlencoded"},
+      body: "entry.864756993=" + encodeURIComponent("YES | Anushka | " + new Date().toISOString())
+    }
+  );
+  modal.classList.add("open");
+});
+
+closeBtn.addEventListener("click", () => modal.classList.remove("open"));
+modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
+</script>
+
+</body>
+</html>
