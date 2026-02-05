@@ -54,7 +54,7 @@ p{font-size:16px;color:#1f2937;line-height:1.6;margin:10px 0;}
 
 .btns{
   display:flex;
-  flex-direction:column; /* ✅ stack YES then NO playground */
+  flex-direction:column;
   gap:14px;
   margin-top:18px;
   align-items:flex-start;
@@ -70,17 +70,19 @@ button{
 }
 .secondary{background:white;border:1px solid var(--border);}
 
-/* ✅ BIGGER movement zone */
+/* BIG movement zone */
 .noArea{
   position:relative;
   width:min(520px, 100%);
   height:220px;
-  margin-top:2px;
   border-radius:18px;
   background:rgba(255,255,255,.55);
   border:1px dashed #ffd1dd;
   padding:10px;
   overflow:hidden;
+
+  /* ensure it doesn't block clicks weirdly */
+  z-index:1;
 }
 
 #noBtn{
@@ -88,11 +90,24 @@ button{
   left:10px;
   top:10px;
   transition:left 140ms ease, top 140ms ease;
+  z-index:3;               /* ✅ always clickable */
+  pointer-events:auto;     /* ✅ always clickable */
 }
+
+/* tiny wiggle so you can SEE it moved */
+@keyframes wiggle{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  50%{transform:translateX(6px)}
+  75%{transform:translateX(-4px)}
+  100%{transform:translateX(0)}
+}
+.wiggle{animation:wiggle .22s ease-in-out 1;}
 
 .modal{
   position:fixed;inset:0;background:rgba(0,0,0,.35);
   display:none;place-items:center;padding:18px;
+  z-index:9998;
 }
 .modal.open{display:grid}
 .modalCard{
@@ -108,10 +123,23 @@ button{
   color:#9ca3af;opacity:.6;pointer-events:none;z-index:9999;
 }
 
+/* JS status pill (debug) */
+.jsStatus{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid #ffd1dd;
+  background:#fff7fb;
+  color:#374151;
+  font-size:12px;
+  font-weight:800;
+  margin-top:8px;
+}
+
 .heart{
   position:fixed;width:14px;height:14px;background:var(--accent);
   transform:rotate(45deg);animation:floatUp 8s linear infinite;
-  opacity:.2;pointer-events:none;
+  opacity:.2;pointer-events:none;z-index:0; /* behind everything */
 }
 .heart::before,.heart::after{
   content:"";position:absolute;width:14px;height:14px;background:inherit;border-radius:50%;
@@ -129,16 +157,17 @@ button{
     <h1>Hey Anushka… 💘</h1>
     <p>I made this page just for you. Because you deserve effort — and a little chaos 😌</p>
 
-    <div class="row">
+    <div class="jsStatus" id="jsStatus">JS: not loaded ❌</div>
+
+    <div class="row" style="margin-top:12px">
       <div>
         <h1 style="font-size:38px;margin:8px 0 6px">Will you be my Valentine? 🌹</h1>
 
         <div class="btns">
           <button class="primary" id="yesBtn">YES 😳💞</button>
 
-          <!-- ✅ bigger free space for NO -->
           <div class="noArea" id="noArea">
-            <button class="secondary" id="noBtn">No 🙃</button>
+            <button class="secondary" id="noBtn" type="button">No 🙃</button>
           </div>
         </div>
 
@@ -147,15 +176,12 @@ button{
 
       <div>
         <div class="photoBox">
-          <!-- IMPORTANT:
-               Upload the image in the SAME folder as index.html in GitHub.
-               Name must match exactly: anushka.jpg (case-sensitive)
-          -->
+          <!-- ✅ Upload anushka.jpg in the SAME folder as index.html -->
           <img id="anushkaImg" src="./anushka.jpg" alt="Anushka">
           <div id="imgFallback" class="fallback">
             Photo not found 😭<br>
             Upload <b>anushka.jpg</b> next to <b>index.html</b><br>
-            (exact spelling + same extension)
+            (same spelling + same extension + lowercase)
           </div>
         </div>
         <p class="muted" style="text-align:center;margin-top:10px">
@@ -179,7 +205,7 @@ button{
     </div>
 
     <div style="margin-top:14px">
-      <button class="primary" id="closeBtn">Close</button>
+      <button class="primary" id="closeBtn" type="button">Close</button>
     </div>
   </div>
 </div>
@@ -187,99 +213,108 @@ button{
 <div class="watermark">Parixit</div>
 
 <script>
-/* Elements */
-const yesBtn   = document.getElementById("yesBtn");
-const noBtn    = document.getElementById("noBtn");
-const noArea   = document.getElementById("noArea");
-const modal    = document.getElementById("modal");
-const closeBtn = document.getElementById("closeBtn");
+document.addEventListener("DOMContentLoaded", () => {
+  const yesBtn   = document.getElementById("yesBtn");
+  const noBtn    = document.getElementById("noBtn");
+  const noArea   = document.getElementById("noArea");
+  const modal    = document.getElementById("modal");
+  const closeBtn = document.getElementById("closeBtn");
 
-const img = document.getElementById("anushkaImg");
-const fb  = document.getElementById("imgFallback");
+  const img = document.getElementById("anushkaImg");
+  const fb  = document.getElementById("imgFallback");
 
-/* Photo fallback if path/name is wrong */
-img.addEventListener("error", () => {
-  img.style.display = "none";
-  fb.style.display = "block";
-});
+  const status = document.getElementById("jsStatus");
+  status.textContent = "JS: loaded ✅"; // ✅ if you DON'T see this on GitHub, you're on old build
 
-/* floating hearts */
-setInterval(() => {
-  const h = document.createElement("div");
-  h.className = "heart";
-  h.style.left = (Math.random() * 100) + "vw";
-  h.style.top = "110vh";
-  document.body.appendChild(h);
-  setTimeout(() => h.remove(), 8000);
-}, 900);
+  // Photo fallback
+  img.addEventListener("error", () => {
+    img.style.display = "none";
+    fb.style.display = "block";
+  });
 
-/* NO button texts */
-const noTexts = [
-  "No 🙃","Are you sure? 🥺","Just checking… really sure? 😌","Hmm. That felt accidental 😅",
-  "Okay but my heart disagrees 💘","This button seems confused 😂","I respect your choice… but 👀",
-  "That click had hesitation energy","Take your time, I’ll wait 🙂","Still cute either way 💗",
-  "You know YES is smiling at you","No pressure. Mild persuasion only 😇","Even the universe blinked just now ✨",
-  "That was bold. Unexpected. Iconic.","I admire the confidence 😌","This is becoming a conversation",
-  "Okay but imagine the GIFs 👀","Your finger slipped, didn’t it?","I’ll pretend I didn’t see that",
-  "Interesting choice… fascinating","Still rooting for us though 💞","Plot twist unlocked",
-  "Rom-coms usually say YES here","Suspense is building 😳","The YES button feels ignored",
-  "No is mysterious, I’ll give you that","Your honesty is appreciated 💐","This tension deserves background music",
-  "Okay, villain arc activated (jk)","I’ll ask again, politely 😌","That was very main-character of you",
-  "No worries, still smiling here 🙂","Your move, protagonist","This is not a rejection, it’s a pause",
-  "The YES button just sighed","Bold strategy, let’s see how it plays out","You’re enjoying this, aren’t you? 😏",
-  "This feels like a slow-burn romcom","Romance loading… please wait","I’m still here, by the way 💗",
-  "Okay okay, I see you","No today… maybe yes in 2 seconds?","The suspense is cute though",
-  "Dramatic pause noted","Respectfully… reconsider?","No is temporary. GIFs are forever",
-  "You’re making this interesting","Still hoping quietly 💘"
-];
-let ni = 0;
+  // floating hearts
+  setInterval(() => {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.style.left = (Math.random() * 100) + "vw";
+    h.style.top = "110vh";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 8000);
+  }, 900);
 
-/* NO button movement (bigger space + guaranteed jump) */
-let lastX = -999, lastY = -999;
-function nextNoPos(){
-  const a = noArea.getBoundingClientRect();
-  const b = noBtn.getBoundingClientRect();
+  // NO button texts
+  const noTexts = [
+    "No 🙃","Are you sure? 🥺","Just checking… really sure? 😌","Hmm. That felt accidental 😅",
+    "Okay but my heart disagrees 💘","This button seems confused 😂","I respect your choice… but 👀",
+    "That click had hesitation energy","Take your time, I’ll wait 🙂","Still cute either way 💗",
+    "You know YES is smiling at you","No pressure. Mild persuasion only 😇","Even the universe blinked just now ✨",
+    "That was bold. Unexpected. Iconic.","I admire the confidence 😌","This is becoming a conversation",
+    "Okay but imagine the GIFs 👀","Your finger slipped, didn’t it?","I’ll pretend I didn’t see that",
+    "Interesting choice… fascinating","Still rooting for us though 💞","Plot twist unlocked",
+    "Rom-coms usually say YES here","Suspense is building 😳","The YES button feels ignored",
+    "No is mysterious, I’ll give you that","Your honesty is appreciated 💐","This tension deserves background music",
+    "Okay, villain arc activated (jk)","I’ll ask again, politely 😌","That was very main-character of you",
+    "No worries, still smiling here 🙂","Your move, protagonist","This is not a rejection, it’s a pause",
+    "The YES button just sighed","Bold strategy, let’s see how it plays out","You’re enjoying this, aren’t you? 😏",
+    "This feels like a slow-burn romcom","Romance loading… please wait","I’m still here, by the way 💗",
+    "Okay okay, I see you","No today… maybe yes in 2 seconds?","The suspense is cute though",
+    "Dramatic pause noted","Respectfully… reconsider?","No is temporary. GIFs are forever",
+    "You’re making this interesting","Still hoping quietly 💘"
+  ];
+  let ni = 0;
 
-  const maxX = Math.max(0, a.width - b.width);
-  const maxY = Math.max(0, a.height - b.height);
+  // Movement: guaranteed jump
+  let lastX = -999, lastY = -999;
+  function nextNoPos(){
+    const a = noArea.getBoundingClientRect();
+    const b = noBtn.getBoundingClientRect();
 
-  const MIN_DIST = 70; // ✅ bigger jump so it feels alive
-  let x = 0, y = 0;
+    const maxX = Math.max(0, a.width - b.width);
+    const maxY = Math.max(0, a.height - b.height);
 
-  for(let tries=0; tries<30; tries++){
-    x = Math.floor(Math.random() * (maxX + 1));
-    y = Math.floor(Math.random() * (maxY + 1));
-    const dist = Math.hypot(x - lastX, y - lastY);
-    if(dist >= MIN_DIST) break;
+    const MIN_DIST = 70;
+    let x = 0, y = 0;
+
+    for(let tries=0; tries<40; tries++){
+      x = Math.floor(Math.random() * (maxX + 1));
+      y = Math.floor(Math.random() * (maxY + 1));
+      const dist = Math.hypot(x - lastX, y - lastY);
+      if(dist >= MIN_DIST) break;
+    }
+    lastX = x; lastY = y;
+    return {x,y};
   }
 
-  lastX = x; lastY = y;
-  return {x,y};
-}
+  noBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    noBtn.textContent = noTexts[ni++ % noTexts.length];
 
-noBtn.addEventListener("click", () => {
-  noBtn.textContent = noTexts[ni++ % noTexts.length];
-  const {x,y} = nextNoPos();
-  noBtn.style.left = x + "px";
-  noBtn.style.top  = y + "px";
+    const {x,y} = nextNoPos();
+    noBtn.style.left = x + "px";
+    noBtn.style.top  = y + "px";
+
+    noBtn.classList.remove("wiggle");
+    void noBtn.offsetWidth;
+    noBtn.classList.add("wiggle");
+  });
+
+  // YES → Google Form + open modal
+  yesBtn.addEventListener("click", () => {
+    fetch(
+      "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfEX7HTR8PxVn4GiyvZ0KGpvaRI_ibhqMVXXPkc3q2PtGSu-A/formResponse",
+      {
+        method: "POST",
+        mode: "no-cors",
+        headers: {"Content-Type":"application/x-www-form-urlencoded"},
+        body: "entry.864756993=" + encodeURIComponent("YES | Anushka | " + new Date().toISOString())
+      }
+    );
+    modal.classList.add("open");
+  });
+
+  closeBtn.addEventListener("click", () => modal.classList.remove("open"));
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
 });
-
-/* YES → Google Form + open modal */
-yesBtn.addEventListener("click", () => {
-  fetch(
-    "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfEX7HTR8PxVn4GiyvZ0KGpvaRI_ibhqMVXXPkc3q2PtGSu-A/formResponse",
-    {
-      method: "POST",
-      mode: "no-cors",
-      headers: {"Content-Type":"application/x-www-form-urlencoded"},
-      body: "entry.864756993=" + encodeURIComponent("YES | Anushka | " + new Date().toISOString())
-    }
-  );
-  modal.classList.add("open");
-});
-
-closeBtn.addEventListener("click", () => modal.classList.remove("open"));
-modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
 </script>
 
 </body>
